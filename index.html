@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RechargeX - User Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .dark { background-color: #111827; color: #f3f4f6; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        .bottom-nav-item.active { color: #3b82f6; }
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        .plan-card { cursor: pointer; border: 2px solid #4b5563; transition: all 0.2s; }
+        .plan-card.selected { border-color: #3b82f6; box-shadow: 0 0 0 2px #3b82f6; background-color: #3b82f620; }
+        .gateway-btn { border: 2px solid #4b5563; transition: all 0.2s; }
+        .gateway-btn.selected { border-color: #3b82f6; box-shadow: 0 0 0 2px #3b82f6; background-color: #3b82f620; }
+        .history-tab.active-tab { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
+
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100">
+
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md space-y-6">
+            <div id="login-view">
+                <h2 class="text-3xl font-bold text-center text-blue-400">Welcome to RechargeX</h2>
+                <p class="text-center text-gray-400">Sign in to continue</p>
+                <form id="login-form" class="mt-8 space-y-6 bg-gray-800 p-8 rounded-2xl shadow-lg">
+                    <input type="email" id="login-email" placeholder="Email" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full px-4 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">Login</button>
+                    <p class="text-center text-sm text-gray-400">
+                        Don't have an account? <a href="#" id="show-register" class="font-medium text-blue-400 hover:text-blue-300">Sign Up</a>
+                    </p>
+                </form>
+            </div>
+            <div id="register-view" class="hidden">
+                 <h2 class="text-3xl font-bold text-center text-blue-400">Create Account</h2>
+                <p class="text-center text-gray-400">Join RechargeX!</p>
+                <form id="register-form" class="mt-8 space-y-4 bg-gray-800 p-8 rounded-2xl shadow-lg">
+                    <input type="text" id="register-name" placeholder="Full Name" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="email" id="register-email" placeholder="Email" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="tel" id="register-phone" placeholder="Phone Number" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="password" id="register-password" placeholder="Password" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="register-referral" placeholder="Referral Code (Optional)" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full px-4 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">Register</button>
+                    <p class="text-center text-sm text-gray-400">
+                        Already have an account? <a href="#" id="show-login" class="font-medium text-blue-400 hover:text-blue-300">Log In</a>
+                    </p>
+                </form>
+            </div>
+             <p id="auth-error" class="text-center text-red-400"></p>
+        </div>
+    </div>
+
+    <!-- Main App Content -->
+    <div id="app-screen" class="hidden">
+        <header class="fixed top-0 left-0 right-0 z-40 bg-gray-800/80 backdrop-blur-sm shadow-md">
+            <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                     <img src="https://placehold.co/40x40/1f2937/7dd3fc?text=RX" alt="Logo" class="rounded-full">
+                     <span class="text-xl font-bold text-white">Recharge<span class="text-blue-400">X</span></span>
+                </div>
+                <button id="sidebar-open-btn" class="text-2xl text-gray-300"><i class="fas fa-bars"></i></button>
+            </div>
+        </header>
+
+        <main id="main-content" class="pt-20 pb-24 max-w-4xl mx-auto px-4">
+            <!-- Home View -->
+            <div id="home-view" class="page">
+                <div class="swiper-container my-4 rounded-xl overflow-hidden shadow-lg">
+                    <div id="banner-slider-wrapper" class="swiper-wrapper"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">Wallet Balance</p>
+                        <p class="text-4xl font-bold text-blue-400">₹<span id="wallet-balance">0.00</span></p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <button onclick="showPage('recharge-view')" class="bg-blue-600/20 text-blue-300 py-4 rounded-lg flex flex-col items-center justify-center space-y-2 hover:bg-blue-600/30 transition-colors">
+                            <i class="fas fa-mobile-alt text-2xl"></i><span class="font-semibold">Recharge</span>
+                        </button>
+                        <button onclick="showPage('history-view')" class="bg-purple-600/20 text-purple-300 py-4 rounded-lg flex flex-col items-center justify-center space-y-2 hover:bg-purple-600/30 transition-colors">
+                            <i class="fas fa-history text-2xl"></i><span class="font-semibold">History</span>
+                        </button>
+                        <button onclick="showPage('withdrawal-view')" class="bg-green-600/20 text-green-300 py-4 rounded-lg flex flex-col items-center justify-center space-y-2 hover:bg-green-600/30 transition-colors">
+                            <i class="fas fa-money-bill-wave text-2xl"></i><span class="font-semibold">Withdraw</span>
+                        </button>
+                    </div>
+                </div>
+                 <div class="mt-6">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-300">Recent Transactions</h3>
+                    <div id="recent-transactions" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Recharge View -->
+            <div id="recharge-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">New Recharge</h2>
+                <form id="recharge-form" class="space-y-6 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <input type="tel" id="recharge-number" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg" placeholder="Enter 10-digit number">
+                    <select id="recharge-operator" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg">
+                       <option value="">Select Operator</option>
+                       <option>Jio</option> <option>Airtel</option> <option>VI</option> <option>BSNL</option>
+                    </select>
+                    <div id="recharge-plans-container" class="hidden">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Select a Plan</label>
+                        <div id="recharge-plans-list" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto p-1"></div>
+                    </div>
+                    <div id="payment-gateways-container" class="hidden">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Payment Gateway</label>
+                        <div id="payment-gateways" class="grid grid-cols-2 gap-4"></div>
+                    </div>
+                    <input type="hidden" id="selected-plan-amount" required>
+                    <input type="hidden" id="selected-plan-description" required>
+                    <button type="submit" class="w-full px-4 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-gray-500" disabled>Proceed to Pay</button>
+                </form>
+            </div>
+
+            <!-- History View -->
+            <div id="history-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">Transaction History</h2>
+                 <div class="flex border-b border-gray-700 mb-4">
+                     <button class="history-tab active-tab py-2 px-4 text-gray-300 font-semibold" onclick="showHistoryTab('recharges')">Recharges</button>
+                     <button class="history-tab py-2 px-4 text-gray-500" onclick="showHistoryTab('commissions')">Commissions</button>
+                     <button class="history-tab py-2 px-4 text-gray-500" onclick="showHistoryTab('withdrawals')">Withdrawals</button>
+                 </div>
+                 <div id="recharges-history-list" class="history-content space-y-3"></div>
+                 <div id="commissions-history-list" class="history-content hidden space-y-3"></div>
+                 <div id="withdrawals-history-list" class="history-content hidden space-y-3"></div>
+            </div>
+
+            <!-- Referral View -->
+            <div id="referral-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">Refer & Earn</h2>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg text-center space-y-4">
+                    <p class="text-gray-400">Your Referral Link</p>
+                    <div class="flex items-center justify-center space-x-2 bg-gray-700 p-3 rounded-lg">
+                        <span id="referral-link" class="text-lg font-mono text-blue-300 tracking-wide truncate"></span>
+                        <button id="copy-referral-btn" class="text-gray-400 hover:text-white"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <button id="whatsapp-share-btn" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-green-600">
+                        <i class="fab fa-whatsapp"></i><span>Share on WhatsApp</span>
+                    </button>
+                </div>
+                <div class="mt-8 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">Commission Structure</h3>
+                    <div id="commission-structure" class="space-y-2 text-gray-300"></div>
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold mb-4">MLM Tree</h3>
+                    <div id="mlm-tree" class="space-y-2 text-gray-300"></div>
+                </div>
+            </div>
+
+            <!-- Profile View -->
+            <div id="profile-view" class="page hidden">
+                 <h2 class="text-2xl font-bold mb-6">Profile Settings</h2>
+                 <form id="profile-update-form" class="space-y-6 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <input type="text" id="profile-name" required class="w-full px-4 py-3 bg-gray-700 rounded-lg" placeholder="Full Name">
+                    <input type="email" id="profile-email" disabled class="w-full px-4 py-3 bg-gray-900 rounded-lg cursor-not-allowed">
+                    <input type="tel" id="profile-phone" required class="w-full px-4 py-3 bg-gray-700 rounded-lg" placeholder="Phone Number">
+                    <input type="text" id="profile-upi" class="w-full px-4 py-3 bg-gray-700 rounded-lg" placeholder="yourname@upi">
+                    <button type="submit" class="w-full px-4 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700">Update Profile</button>
+                 </form>
+                 <form id="password-update-form" class="mt-8 space-y-6 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h3 class="font-semibold text-lg">Change Password</h3>
+                    <input type="password" id="new-password" required class="w-full px-4 py-3 bg-gray-700 rounded-lg" placeholder="New Password">
+                    <button type="submit" class="w-full px-4 py-3 font-semibold text-white bg-gray-600 rounded-lg hover:bg-gray-700">Update Password</button>
+                 </form>
+            </div>
+            
+            <!-- Withdrawal View -->
+            <div id="withdrawal-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">Request Withdrawal</h2>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <div class="text-center mb-4">
+                        <p class="text-gray-400 text-sm">Available Balance</p>
+                        <p class="text-3xl font-bold text-green-400">₹<span id="withdrawal-wallet-balance">0.00</span></p>
+                    </div>
+                    <form id="withdrawal-form" class="space-y-4">
+                        <input type="number" id="withdrawal-amount" required class="w-full px-4 py-3 bg-gray-700 rounded-lg" placeholder="Amount to withdraw" step="0.01">
+                        <input type="text" id="withdrawal-upi" required class="w-full px-4 py-3 bg-gray-700 rounded-lg" placeholder="Confirm your UPI ID">
+                        <button type="submit" class="w-full px-4 py-3 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Static Content Pages -->
+            <div id="about-us-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">About Us</h2>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4 text-gray-300">
+                    <p>Welcome to RechargeX, your one-stop solution for fast, easy, and secure mobile recharges. We are committed to providing a seamless experience for all your prepaid mobile needs.</p>
+                    <p>Our platform not only allows you to recharge any mobile number from any operator in India but also offers an exciting opportunity to earn through our multi-level marketing (MLM) referral program.</p>
+                </div>
+            </div>
+            <div id="contact-us-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">Contact Us</h2>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4 text-gray-300">
+                    <p>Have questions? We're here to help!</p>
+                    <p><strong>Address:</strong><br>123 Tech Park, Silicon Valley,<br>Bangalore, 560100, India</p>
+                    <p><strong>Email:</strong> support@rechargex.demo</p>
+                    <p><strong>Phone:</strong> +91 98765 43210</p>
+                </div>
+            </div>
+            <div id="privacy-policy-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">Privacy Policy</h2>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4 text-gray-300"><p>Your privacy is important to us. This privacy statement explains the personal data RechargeX processes, how RechargeX processes it, and for what purposes. [Demo Content]</p></div>
+            </div>
+            <div id="terms-conditions-view" class="page hidden">
+                <h2 class="text-2xl font-bold mb-6">Terms & Conditions</h2>
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4 text-gray-300"><p>Please read these terms and conditions carefully before using Our Service. By accessing or using the Service you agree to be bound by these Terms and Conditions. [Demo Content]</p></div>
+            </div>
+
+        </main>
+
+        <aside id="sidebar" class="fixed top-0 right-0 h-full w-72 bg-gray-800 shadow-2xl z-50 transform translate-x-full">
+            <div class="p-4 flex justify-between items-center border-b border-gray-700">
+                <h3 class="text-lg font-semibold">Menu</h3>
+                <button id="sidebar-close-btn" class="text-2xl text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <nav class="p-4 space-y-1">
+                <a href="https://wa.me/919876543210" target="_blank" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fab fa-whatsapp w-6 text-center text-green-500"></i><span>WhatsApp</span></a>
+                <a href="https://youtube.com" target="_blank" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fab fa-youtube w-6 text-center text-red-500"></i><span>Youtube</span></a>
+                <a href="https://instagram.com" target="_blank" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fab fa-instagram w-6 text-center text-pink-500"></i><span>Instagram</span></a>
+                <a href="https://facebook.com" target="_blank" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fab fa-facebook w-6 text-center text-blue-500"></i><span>Facebook</span></a>
+                <div class="border-t border-gray-700 my-2 !mt-3"></div>
+                <a href="#" onclick="showPage('about-us-view', true)" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fas fa-info-circle w-6 text-center text-gray-400"></i><span>About Us</span></a>
+                <a href="#" onclick="showPage('contact-us-view', true)" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fas fa-headset w-6 text-center text-gray-400"></i><span>Contact Us</span></a>
+                <a href="#" onclick="showPage('privacy-policy-view', true)" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fas fa-shield-alt w-6 text-center text-gray-400"></i><span>Privacy Policy</span></a>
+                <a href="#" onclick="showPage('terms-conditions-view', true)" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700"><i class="fas fa-file-contract w-6 text-center text-gray-400"></i><span>Terms & Conditions</span></a>
+            </nav>
+            <div class="absolute bottom-0 left-0 right-0 p-4">
+                 <button id="logout-btn" class="w-full flex items-center justify-center space-x-2 px-4 py-3 font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+            </div>
+        </aside>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+        <nav class="fixed bottom-0 left-0 right-0 z-40 bg-gray-800/80 backdrop-blur-sm border-t border-gray-700">
+            <div class="max-w-4xl mx-auto flex justify-around">
+                <button onclick="showPage('home-view')" class="bottom-nav-item active flex-1 flex flex-col items-center justify-center py-3 text-gray-400"><i class="fas fa-home text-xl"></i><span class="text-xs mt-1">Home</span></button>
+                <button onclick="showPage('recharge-view')" class="bottom-nav-item flex-1 flex flex-col items-center justify-center py-3 text-gray-400"><i class="fas fa-bolt text-xl"></i><span class="text-xs mt-1">Recharge</span></button>
+                <button onclick="showPage('history-view')" class="bottom-nav-item flex-1 flex flex-col items-center justify-center py-3 text-gray-400"><i class="fas fa-receipt text-xl"></i><span class="text-xs mt-1">History</span></button>
+                <button onclick="showPage('referral-view')" class="bottom-nav-item flex-1 flex flex-col items-center justify-center py-3 text-gray-400"><i class="fas fa-users text-xl"></i><span class="text-xs mt-1">Referral</span></button>
+                <button onclick="showPage('profile-view')" class="bottom-nav-item flex-1 flex flex-col items-center justify-center py-3 text-gray-400"><i class="fas fa-user-circle text-xl"></i><span class="text-xs mt-1">Profile</span></button>
+            </div>
+        </nav>
+    </div>
+    
+    <div id="toast" class="fixed bottom-24 right-4 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg opacity-0 translate-y-4 transition-all duration-300"><p id="toast-message"></p></div>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // --- Supabase and Global variables ---
+        const SUPABASE_URL = 'https://kvtzqoimnczbnoqlruhd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2dHpxb2ltbmN6Ym5vcWxydWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MTQzMjcsImV4cCI6MjA3Mjk5MDMyN30._mMvMsQcVPIXXWyG5c4BxJbfYecV8sE4uFrAE2A3fI0';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let swiper;
+        let currentUserData = null;
+
+        // --- UI Elements ---
+        const authScreen = document.getElementById('auth-screen');
+        const appScreen = document.getElementById('app-screen');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        // --- Toast Notifier ---
+        function showToast(message, isError = false) {
+            toastMessage.innerText = message;
+            toast.className = toast.className.replace(/bg-\w+-500/, isError ? 'bg-red-500' : 'bg-green-500');
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-4'), 3000);
+        }
+
+        // --- Auth Logic ---
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) document.getElementById('auth-error').innerText = error.message;
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { data: { user }, error } = await supabase.auth.signUp({
+                email: document.getElementById('register-email').value,
+                password: document.getElementById('register-password').value,
+                options: {
+                    data: {
+                        full_name: document.getElementById('register-name').value,
+                        phone: document.getElementById('register-phone').value,
+                        referral_code: document.getElementById('register-referral').value || null
+                    }
+                }
+            });
+            if (error) {
+                document.getElementById('auth-error').innerText = error.message;
+            } else {
+                showToast('Registration successful! Please check your email to verify.');
+                toggleAuthViews();
+            }
+        });
+
+        document.getElementById('show-register').addEventListener('click', (e) => { e.preventDefault(); toggleAuthViews(); });
+        document.getElementById('show-login').addEventListener('click', (e) => { e.preventDefault(); toggleAuthViews(); });
+        function toggleAuthViews() {
+            document.getElementById('login-view').classList.toggle('hidden');
+            document.getElementById('register-view').classList.toggle('hidden');
+            document.getElementById('auth-error').innerText = '';
+        }
+        document.getElementById('logout-btn').addEventListener('click', () => supabase.auth.signOut());
+
+        // --- App Initialization ---
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            if (session?.user) {
+                authScreen.classList.add('hidden');
+                appScreen.classList.remove('hidden');
+                await initializeUserDashboard(session.user);
+            } else {
+                authScreen.classList.remove('hidden');
+                appScreen.classList.add('hidden');
+                currentUserData = null;
+            }
+        });
+
+        async function initializeUserDashboard(user) {
+            await Promise.all([
+                loadBanners(),
+                loadUserProfile(user),
+                loadTransactions(user),
+                loadMLMDetails(user),
+                loadPaymentGateways()
+            ]);
+        }
+
+        // --- Data Loading Functions ---
+        async function loadBanners() {
+            const { data } = await supabase.from('settings').select('value').eq('key', 'banner_images').single();
+            if (data?.value) {
+                document.getElementById('banner-slider-wrapper').innerHTML = data.value.map(url => `<div class="swiper-slide"><img src="${url}" class="w-full h-40 object-cover" alt="Banner"></div>`).join('');
+                if (swiper) swiper.destroy(true, true);
+                swiper = new Swiper('.swiper-container', { loop: true, pagination: { el: '.swiper-pagination', clickable: true }, autoplay: { delay: 3000 } });
+            }
+        }
+
+        async function loadUserProfile(user) {
+            const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+            if (error) return console.error('Error fetching profile:', error);
+            currentUserData = data;
+            
+            document.getElementById('wallet-balance').textContent = parseFloat(data.wallet_balance).toFixed(2);
+            document.getElementById('withdrawal-wallet-balance').textContent = parseFloat(data.wallet_balance).toFixed(2);
+            
+            // Populate profile form
+            document.getElementById('profile-name').value = data.name || '';
+            document.getElementById('profile-email').value = data.email || '';
+            document.getElementById('profile-phone').value = data.phone || '';
+            document.getElementById('profile-upi').value = data.upi_id || '';
+            document.getElementById('withdrawal-upi').value = data.upi_id || '';
+        }
+
+        async function loadTransactions(user) {
+            const { data, error } = await supabase.from('transactions').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+            const { data: withdrawals, error: wError } = await supabase.from('withdrawals').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+
+            if (error || wError) return console.error('Error fetching history:', error || wError);
+            
+            // Recent Transactions
+            const recentList = document.getElementById('recent-transactions');
+            recentList.innerHTML = data.length > 0 ? data.slice(0, 5).map(tx => transactionTemplate(tx)).join('') : '<p class="text-gray-500 text-center">No transactions yet.</p>';
+
+            // Full History
+            const recharges = data.filter(tx => tx.type === 'recharge_credit');
+            const commissions = data.filter(tx => tx.type === 'commission');
+            document.getElementById('recharges-history-list').innerHTML = recharges.length ? recharges.map(tx => transactionTemplate(tx)).join('') : '<p class="text-gray-500 text-center">No recharge history.</p>';
+            document.getElementById('commissions-history-list').innerHTML = commissions.length ? commissions.map(tx => transactionTemplate(tx)).join('') : '<p class="text-gray-500 text-center">No commission history.</p>';
+            document.getElementById('withdrawals-history-list').innerHTML = withdrawals.length ? withdrawals.map(withdrawalTemplate).join('') : '<p class="text-gray-500 text-center">No withdrawal history.</p>';
+        }
+
+        async function loadMLMDetails(user) {
+            if (!currentUserData) await loadUserProfile(user);
+            
+            const referralLink = `${window.location.origin}${window.location.pathname}?ref=${currentUserData.referral_code}`;
+            document.getElementById('referral-link').textContent = referralLink;
+
+            const { data: mlmSettings } = await supabase.from('settings').select('value').eq('key', 'mlm_commission').single();
+            if (mlmSettings?.value) {
+                const structureEl = document.getElementById('commission-structure');
+                structureEl.innerHTML = Object.entries(mlmSettings.value).map(([level, rate]) => 
+                    `<div class="flex justify-between"><span>Level ${level.replace('level', '')}</span><span class="font-semibold">${rate}%</span></div>`
+                ).join('');
+            }
+            
+            const treeEl = document.getElementById('mlm-tree');
+            treeEl.innerHTML = [1,2,3,4,5].map(level => {
+                const users = Math.pow(10, level);
+                return `<div class="flex justify-between"><span>Level ${level}</span><span class="font-semibold">${users.toLocaleString('en-IN')} Users</span></div>`;
+            }).join('');
+        }
+
+        async function loadRechargePlans(operator) {
+            const listEl = document.getElementById('recharge-plans-list');
+            listEl.innerHTML = '<p class="text-gray-400 col-span-full text-center">Loading plans...</p>';
+            const { data, error } = await supabase.from('recharge_plans').select('*').eq('operator', operator).eq('is_active', true).order('amount');
+            if (error) return listEl.innerHTML = '<p class="text-red-400">Could not load plans.</p>';
+            
+            listEl.innerHTML = data.length ? data.map(plan => `
+                <div class="plan-card p-3 rounded-lg border-2 bg-gray-700" data-amount="${plan.amount}" data-description="${plan.description}">
+                    <p class="font-bold text-lg">₹ ${plan.amount}</p>
+                    <p class="text-sm text-gray-300">${plan.description}</p>
+                </div>
+            `).join('') : '<p class="text-gray-400 col-span-full text-center">No plans available for this operator.</p>';
+
+            document.querySelectorAll('.plan-card').forEach(card => card.addEventListener('click', (e) => {
+                document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+                const selectedCard = e.currentTarget;
+                selectedCard.classList.add('selected');
+                document.getElementById('selected-plan-amount').value = selectedCard.dataset.amount;
+                document.getElementById('selected-plan-description').value = selectedCard.dataset.description;
+                document.getElementById('payment-gateways-container').classList.remove('hidden');
+                document.querySelector('#recharge-form button[type="submit"]').disabled = false;
+            }));
+        }
+
+        async function loadPaymentGateways() {
+            const { data } = await supabase.from('gateway_settings').select('name, is_enabled').eq('is_enabled', true);
+            const container = document.getElementById('payment-gateways');
+            if (data) {
+                container.innerHTML = data.map(gw => `
+                    <button type="button" data-gateway="${gw.name}" class="gateway-btn p-4 rounded-lg flex items-center justify-center">${gw.name}</button>
+                `).join('');
+                container.querySelectorAll('.gateway-btn').forEach(btn => btn.addEventListener('click', e => {
+                    container.querySelectorAll('.gateway-btn').forEach(b => b.classList.remove('selected'));
+                    e.currentTarget.classList.add('selected');
+                }));
+            }
+        }
+
+        // --- Templates ---
+        function transactionTemplate(tx) {
+            const isCredit = ['recharge_credit', 'commission'].includes(tx.type);
+            const details = tx.details || {};
+            const title = {
+                recharge_credit: `Recharge for ${details.mobile_number || 'Mobile'}`,
+                commission: `Level ${details.level || ''} Commission from ${details.from_user_email || 'user'}`,
+            }[tx.type] || 'Transaction';
+            return `
+            <div class="bg-gray-800 p-4 rounded-lg flex items-center justify-between">
+                <div>
+                    <p class="font-semibold">${title}</p>
+                    <p class="text-xs text-gray-400">${new Date(tx.created_at).toLocaleString()}</p>
+                </div>
+                <p class="font-bold text-green-400">+₹${parseFloat(tx.amount).toFixed(2)}</p>
+            </div>`;
+        }
+
+        function withdrawalTemplate(wd) {
+            const statusColors = { pending: 'text-yellow-400', completed: 'text-green-400', rejected: 'text-red-400' };
+            return `
+            <div class="bg-gray-800 p-4 rounded-lg flex items-center justify-between">
+                <div>
+                    <p class="font-semibold">Withdrawal to ${wd.upi_id}</p>
+                    <p class="text-xs text-gray-400">${new Date(wd.created_at).toLocaleString()}</p>
+                </div>
+                <div>
+                    <p class="font-bold text-right text-red-400">-₹${parseFloat(wd.amount).toFixed(2)}</p>
+                    <p class="text-xs text-right capitalize ${statusColors[wd.status]}">${wd.status}</p>
+                </div>
+            </div>`;
+        }
+
+        // --- Form Submissions & Event Listeners ---
+        document.getElementById('recharge-operator').addEventListener('change', (e) => {
+            const operator = e.target.value;
+            const plansContainer = document.getElementById('recharge-plans-container');
+            if (operator) {
+                plansContainer.classList.remove('hidden');
+                loadRechargePlans(operator);
+            } else {
+                plansContainer.classList.add('hidden');
+                document.getElementById('payment-gateways-container').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('recharge-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const gatewayEl = document.querySelector('.gateway-btn.selected');
+            if (!gatewayEl) return showToast('Please select a payment gateway.', true);
+            
+            // Simulate payment success and create a pending recharge request.
+            showToast('Payment successful! Your recharge is pending approval.');
+            
+            const { error } = await supabase.from('recharges').insert({
+                user_id: currentUserData.id,
+                mobile_number: document.getElementById('recharge-number').value,
+                operator: document.getElementById('recharge-operator').value,
+                amount: document.getElementById('selected-plan-amount').value,
+                status: 'pending',
+                payment_gateway: gatewayEl.dataset.gateway,
+                txn_id: `SIM_${Date.now()}`
+            });
+                
+            if (error) showToast(`Error: ${error.message}`, true);
+            else {
+                e.target.reset();
+                document.getElementById('recharge-plans-container').classList.add('hidden');
+                document.getElementById('payment-gateways-container').classList.add('hidden');
+                showPage('history-view');
+            }
+        });
+
+        document.getElementById('withdrawal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('withdrawal-amount').value);
+            if (amount <= 0 || amount > currentUserData.wallet_balance) {
+                return showToast('Invalid withdrawal amount.', true);
+            }
+            
+            const { error: walletError } = await supabase.from('users')
+                .update({ wallet_balance: currentUserData.wallet_balance - amount })
+                .eq('id', currentUserData.id);
+
+            if(walletError) return showToast('Could not update wallet. Try again.', true);
+
+            const { error } = await supabase.from('withdrawals').insert({
+                user_id: currentUserData.id,
+                amount: amount,
+                upi_id: document.getElementById('withdrawal-upi').value,
+                status: 'pending'
+            });
+
+            if (error) showToast(`Error: ${error.message}`, true);
+            else {
+                showToast('Withdrawal request submitted successfully!');
+                await loadUserProfile({ id: currentUserData.id }); // Refresh balance
+                e.target.reset();
+                showPage('history-view');
+            }
+        });
+
+        document.getElementById('profile-update-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { error } = await supabase.from('users').update({
+                name: document.getElementById('profile-name').value,
+                phone: document.getElementById('profile-phone').value,
+                upi_id: document.getElementById('profile-upi').value
+            }).eq('id', currentUserData.id);
+            if (error) showToast(`Error: ${error.message}`, true);
+            else showToast('Profile updated successfully!');
+        });
+        
+        document.getElementById('password-update-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { error } = await supabase.auth.updateUser({ password: document.getElementById('new-password').value });
+            if (error) showToast(`Error: ${error.message}`, true);
+            else {
+                showToast('Password updated successfully!');
+                e.target.reset();
+            }
+        });
+
+        // --- Navigation & UI Helpers ---
+        window.showPage = (pageId, fromSidebar = false) => {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            if (!fromSidebar) {
+                document.querySelectorAll('.bottom-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('onclick').includes(pageId)) item.classList.add('active');
+                });
+            }
+            if (fromSidebar) {
+                document.getElementById('sidebar').classList.add('translate-x-full');
+                document.getElementById('sidebar-overlay').classList.add('hidden');
+            }
+            window.scrollTo(0, 0);
+        };
+        
+        window.showHistoryTab = (tabId) => {
+            document.querySelectorAll('.history-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`${tabId}-history-list`).classList.remove('hidden');
+            document.querySelectorAll('.history-tab').forEach(tab => tab.classList.remove('active-tab'));
+            event.target.classList.add('active-tab');
+        };
+        
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        document.getElementById('sidebar-open-btn').addEventListener('click', () => { sidebar.classList.remove('translate-x-full'); overlay.classList.remove('hidden'); });
+        document.getElementById('sidebar-close-btn').addEventListener('click', () => { sidebar.classList.add('translate-x-full'); overlay.classList.add('hidden'); });
+        overlay.addEventListener('click', () => { sidebar.classList.add('translate-x-full'); overlay.classList.add('hidden'); });
+
+        // --- Referral Sharing ---
+        document.getElementById('copy-referral-btn').addEventListener('click', () => {
+            const link = document.getElementById('referral-link').textContent;
+            navigator.clipboard.writeText(link).then(() => showToast('Referral link copied!'), () => showToast('Failed to copy.', true));
+        });
+        document.getElementById('whatsapp-share-btn').addEventListener('click', () => {
+            const link = document.getElementById('referral-link').textContent;
+            const message = encodeURIComponent(`Join RechargeX and earn rewards! Use my link to sign up: ${link}`);
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        });
+        
+        // --- Initial Load ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        if (refCode) {
+            document.getElementById('register-referral').value = refCode;
+        }
+        showPage('home-view');
+    </script>
+</body>
+</html>
+
